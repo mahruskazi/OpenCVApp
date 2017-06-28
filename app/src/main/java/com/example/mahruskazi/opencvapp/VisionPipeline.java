@@ -12,6 +12,7 @@ import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
 import java.util.List;
+
 /**
  *
  * Main Pipeline in which HSV Threshold and Contours are calculated
@@ -27,6 +28,14 @@ public class VisionPipeline {
 
     private int width;
     private int height;
+
+    private static double filterContoursMinArea = 30;
+    private static double filterContoursMinPerimeter = 0;
+    private static double[] filterContoursWidth = {0, 1000};
+    private static double[] filterContoursHeight = {0, 1000};
+    private static double[] filterContoursSolidity = {0, 100};
+    private static double[] filterContoursVertices = {0, 1000000};
+    private static double[] filterContoursRatio = {0, 1000};
 
     private Mat hsvThresholdOutput;
 
@@ -58,18 +67,20 @@ public class VisionPipeline {
 
         // Step Filter_Contours0:
         ArrayList<MatOfPoint> filterContoursContours = findContoursOutput;
-        double filterContoursMinArea = 30.0;
-        double filterContoursMinPerimeter = 0;
-        double filterContoursMinWidth = 0;
-        double filterContoursMaxWidth = 1000;
-        double filterContoursMinHeight = 0;
-        double filterContoursMaxHeight = 1000;
-        double[] filterContoursSolidity = {0, 100};
-        double filterContoursMaxVertices = 1000000;
-        double filterContoursMinVertices = 0;
-        double filterContoursMinRatio = 0;
-        double filterContoursMaxRatio = 1000;
-        filterContours(filterContoursContours, filterContoursMinArea, filterContoursMinPerimeter, filterContoursMinWidth, filterContoursMaxWidth, filterContoursMinHeight, filterContoursMaxHeight, filterContoursSolidity, filterContoursMaxVertices, filterContoursMinVertices, filterContoursMinRatio, filterContoursMaxRatio, filterContoursOutput);
+
+        filterContours(filterContoursContours, filterContoursMinArea, filterContoursMinPerimeter, filterContoursWidth, filterContoursHeight, filterContoursSolidity, filterContoursVertices, filterContoursRatio, filterContoursOutput);
+
+    }
+
+    public static void changeSettings(double[][] settings){
+        filterContoursMinArea = settings[0][0];
+        filterContoursMinPerimeter = settings[0][1];
+
+        filterContoursWidth = settings[1];
+        filterContoursHeight = settings[2];
+        filterContoursSolidity = settings[3];
+        filterContoursVertices = settings[4];
+        filterContoursRatio = settings[5];
 
     }
 
@@ -146,28 +157,24 @@ public class VisionPipeline {
      * @param output is the the output list of contours
      * @param minArea is the minimum area of a contour that will be kept
      * @param minPerimeter is the minimum perimeter of a contour that will be kept
-     * @param minWidth minimum width of a contour
-     * @param maxWidth maximum width
-     * @param minHeight minimum height
-     * @param maxHeight maximimum height
+     * @param rangeWidth minimum and maximum width of a contour
+     * @param rangeHeight minimum and maximum height
      * @param solidity the minimum and maximum solidity of a contour
-     * @param minVertexCount minimum vertex Count of the contours
-     * @param maxVertexCount maximum vertex Count
-     * @param minRatio minimum ratio of width to height
-     * @param maxRatio maximum ratio of width to height
+     * @param rangeVertexCount minimum and maximum vertex Count
+     * @param rangeRatio minimum and maximum ratio of width to height
      */
     private void filterContours(List<MatOfPoint> inputContours, double minArea,
-                                double minPerimeter, double minWidth, double maxWidth, double minHeight, double
-                                        maxHeight, double[] solidity, double maxVertexCount, double minVertexCount, double
-                                        minRatio, double maxRatio, List<MatOfPoint> output) {
+                                double minPerimeter, double[] rangeWidth, double[] rangeHeight,
+                                        double[] solidity, double[] rangeVertexCount, double[]
+                                        rangeRatio, List<MatOfPoint> output) {
         final MatOfInt hull = new MatOfInt();
         output.clear();
         //operation
         for (int i = 0; i < inputContours.size(); i++) {
             final MatOfPoint contour = inputContours.get(i);
             final Rect bb = Imgproc.boundingRect(contour);
-            if (bb.width < minWidth || bb.width > maxWidth) continue;
-            if (bb.height < minHeight || bb.height > maxHeight) continue;
+            if (bb.width < rangeWidth[0] || bb.width > rangeWidth[1]) continue;
+            if (bb.height < rangeHeight[0] || bb.height > rangeHeight[1]) continue;
             final double area = Imgproc.contourArea(contour);
             if (area < minArea) continue;
             if (Imgproc.arcLength(new MatOfPoint2f(contour.toArray()), true) < minPerimeter) continue;
@@ -181,9 +188,9 @@ public class VisionPipeline {
             }
             final double solid = 100 * area / Imgproc.contourArea(mopHull);
             if (solid < solidity[0] || solid > solidity[1]) continue;
-            if (contour.rows() < minVertexCount || contour.rows() > maxVertexCount)	continue;
+            if (contour.rows() < rangeVertexCount[0] || contour.rows() > rangeVertexCount[1])	continue;
             final double ratio = bb.width / (double)bb.height;
-            if (ratio < minRatio || ratio > maxRatio) continue;
+            if (ratio < rangeRatio[0] || ratio > rangeRatio[1]) continue;
             output.add(contour);
         }
     }

@@ -81,7 +81,7 @@
             />
 
         <org.florescu.android.rangeseekbar.RangeSeekBar
-            android:id="@+id/min_max_verticies"
+            android:id="@+id/min_max_vertices"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -96,7 +96,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/min_max_verticies"
+            app:layout_constraintTop_toBottomOf="@id/min_max_vertices"
             android:layout_marginTop="16dp"
             />
 
@@ -128,13 +128,13 @@
             app:layout_constraintLeft_toLeftOf="@id/min_max_solidity"/>
 
         <TextView
-            android:id="@+id/min_max_verticies_title"
+            android:id="@+id/min_max_vertices_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Min/Max Verticies"
+            android:text="Min/Max Vertices"
             android:textColor="@android:color/holo_blue_dark"
-            app:layout_constraintTop_toTopOf="@id/min_max_verticies"
-            app:layout_constraintLeft_toLeftOf="@id/min_max_verticies"/>
+            app:layout_constraintTop_toTopOf="@id/min_max_vertices"
+            app:layout_constraintLeft_toLeftOf="@id/min_max_vertices"/>
 
         <TextView
             android:id="@+id/min_max_ratio_title"
