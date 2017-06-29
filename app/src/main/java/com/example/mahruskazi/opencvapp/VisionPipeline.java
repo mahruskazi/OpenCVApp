@@ -26,9 +26,13 @@ import java.util.List;
  */
 public class VisionPipeline {
 
+    public static final double MIN_AREA = 30.0;
+    public static final double MIN_PERIMETER = 0.0;
+
     private int width;
     private int height;
 
+    private static double[][] curSettings;
     private static double filterContoursMinArea = 30;
     private static double filterContoursMinPerimeter = 0;
     private static double[] filterContoursWidth = {0, 1000};
@@ -44,6 +48,11 @@ public class VisionPipeline {
         this.height = height;
 
         hsvThresholdOutput = new Mat(width, height, CvType.CV_8UC1);
+
+        curSettings = new double[][]{{filterContoursMinArea, filterContoursMinPerimeter},
+                                     filterContoursWidth, filterContoursHeight,
+                                     filterContoursSolidity, filterContoursVertices,
+                                     filterContoursRatio};
     }
     //Outputs
     private ArrayList<MatOfPoint> findContoursOutput = new ArrayList<MatOfPoint>();
@@ -82,6 +91,11 @@ public class VisionPipeline {
         filterContoursVertices = settings[4];
         filterContoursRatio = settings[5];
 
+        curSettings = settings;
+    }
+
+    public static double[][] currentSettings(){
+        return curSettings;
     }
 
     /**

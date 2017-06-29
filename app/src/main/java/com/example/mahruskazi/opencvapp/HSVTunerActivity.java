@@ -92,6 +92,7 @@ public class HSVTunerActivity extends Activity{
 
     public void onStop(){
         super.onStop();
+        finish();
         Log.d(TAG, "In Stop");
     }
 

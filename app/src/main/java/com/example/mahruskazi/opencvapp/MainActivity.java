@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
     private static final int VIEW_MODE_RGB = 0;
     private static final int VIEW_MODE_HSV = 1;
-    private static final int VIEW_MODE_CONTOUR = 2;
+    private static final int VIEW_MODE_SETTINGS = 2;
     private static final int VIEW_MODE_OUTPUT = 3;
 
     private int[] curHueRange = new int[]{0, 180};
@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     Mat mOutput;
 
     MenuItem mItemHSVTune;
-    MenuItem mItemContour;
+    MenuItem mItemSettings;
     MenuItem mItemPreview;
     MenuItem mItemOutput;
 
@@ -83,9 +83,9 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
-        mItemHSVTune = menu.add("Start/Tune HSV");
-        mItemContour = menu.add("Find Contours");
         mItemPreview = menu.add("Preview Image");
+        mItemHSVTune = menu.add("Start/Tune HSV");
+        mItemSettings = menu.add("Contour Settings");
         mItemOutput = menu.add("Show Output");
         return true;
     }
@@ -96,7 +96,6 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         if(item == mItemHSVTune){
             Intent launchNewActivity = new Intent(MainActivity.this, HSVTunerActivity.class);
 
-
             launchNewActivity.putExtra("Hue Data", curHueRange);
             launchNewActivity.putExtra("Sat Data", curSatRange);
             launchNewActivity.putExtra("Val Data", curValRange);
@@ -105,8 +104,9 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
             HSVTunerActivity.setIsRunning(true);
             mViewMode = VIEW_MODE_HSV;
         }
-        else if(item == mItemContour){
-            mViewMode = VIEW_MODE_CONTOUR;
+        else if(item == mItemSettings){
+            Intent launchNewActivity = new Intent(MainActivity.this, FilterSettings.class);
+            startActivity(launchNewActivity);
         }
         else if(item == mItemOutput){
             mViewMode = VIEW_MODE_OUTPUT;
@@ -194,9 +194,6 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
             case VIEW_MODE_HSV:
                 mHsv = pipeline.hsvThresholdOutput();
                 mOutput = mHsv;
-                break;
-            case VIEW_MODE_CONTOUR:
-                pipeline.findContoursOutput();
                 break;
             case VIEW_MODE_RGB:
                 mOutput = mRgba;
